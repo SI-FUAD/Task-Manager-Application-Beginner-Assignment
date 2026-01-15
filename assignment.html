@@ -1,0 +1,334 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Assignment</title>
+    <style>
+        body {
+            background-color: rgba(175, 140, 207, 0.299);
+        }
+
+        h1 {
+            margin: 30px;
+            padding: 20px;
+            background-color: blueviolet;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            color: antiquewhite;
+            display: flex;
+            justify-content: center;
+        }
+
+        #add {
+            margin: 20px;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+        }
+
+        #submit_button {
+            margin-left: 50px;
+            border-radius: 20px;
+            padding: 0px 50px;
+            background-color: rgb(165, 165, 183);
+            cursor: pointer;
+        }
+
+        #submit_button:hover {
+            background-color: rgb(122, 122, 181);
+        }
+
+        #inputTitle, #inputDescription, #priority {
+            margin: 20px;
+            padding: 20px;
+        }
+
+        #inputEditorDelete {
+            padding: 20px;
+            width: 240px;
+        }
+
+        #edit, #delete {
+            width: 100px;
+            height: 40px;
+            background-color: rgb(164, 192, 182);
+            cursor: pointer;
+        }
+
+        #edit:hover, #delete:hover {
+            background-color: rgb(120, 147, 137);
+        }
+
+        #addError {
+            color: red;
+            display: flex;
+            justify-content: center;
+        }
+
+        #addSuccess {
+            color: green;
+            display: flex;
+            justify-content: center;
+        }
+
+        footer {
+            padding: 20px;
+            background-color: rgb(55, 47, 63);
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            color: bisque;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Task Manager Application</h1>
+    </header>
+    <main>
+        <p id="date" style="margin-left: 20px;">Wait 1 sec...</p>
+        <div id="add">
+        <input type="text" placeholder="Add a new task title" id="inputTitle" required><br><br>
+        <input type="text" placeholder="Add a new task desciption" id="inputDescription" required><br><br>
+        <select name="priority" id="priority">
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+        </select>
+        <button id="submit_button">Submit</button>
+    </div>
+    <p id="addSuccess"></p>
+    <p id="addError"></p>
+    <div>
+        <input type="text" placeholder="Add a task title to edit or delete" id="inputEditorDelete" required><br><br>
+        <button id="edit">Edit</button>
+        <button id="delete">Delete</button>
+    </div>
+    <div id="editField"></div>
+    <p id="editordeleteError" style="color: red;"></p>
+    <p id="showId"></p>
+    </main>
+    <footer>Task Managing Application. All rights reserved.</footer>
+    <script>
+        function load() {
+            const dt = localStorage.getItem("Task Manager Application");
+            if (dt.length === 0) {
+                return {title : "", description : "", priority : ""};
+            } else {
+                const data = JSON.parse(dt);
+                console.log(data);
+                return data;
+            }
+        }
+        save([{title : "New task", description : "Testing", priority : "Low"}, {title : "New task 2", description : "Testing 2", priority : "Medium"}, {title : "New task 3", description : "Testing 3", priority : "High"}]);
+
+        function save(s) {
+            const st = JSON.stringify(s);
+            localStorage.setItem("Task Manager Application", st);
+        }
+
+        function addTask() {
+            const inputTitle = document.getElementById("inputTitle");
+            const inputDescription = document.getElementById("inputDescription");
+            const inputPriority = document.getElementById("priority");
+            let obj = {};
+            let r;
+            if (z) {
+            if (inputTitle.value !== "" && inputDescription.value !== "") {
+                for (const t of allId) {
+                    if (t.title === inputTitle.value) {
+                        r = "Reject";
+                        break;
+                    } else {
+                        r = "Accept";
+                    }
+                }
+            } else {
+                r = "";
+            }
+            if (r === "Accept") {
+                obj = {
+                    title : inputTitle.value,
+                    description : inputDescription.value,
+                    priority : inputPriority.value
+                };
+                allId.push(obj);
+                save(allId);
+                document.getElementById("addError").innerHTML = "";
+                document.getElementById("editordeleteError").innerHTML = "";
+                document.getElementById("addSuccess").innerHTML = "Successfully Added!";
+                display();
+            } else if (r === "Reject") {
+                document.getElementById("addSuccess").innerHTML = "";
+                document.getElementById("editordeleteError").innerHTML = "";
+                document.getElementById("addError").innerHTML = "Title must be unique!";
+            } else if (r === "") {
+                document.getElementById("addSuccess").innerHTML = "";
+                document.getElementById("editordeleteError").innerHTML = "";
+                document.getElementById("addError").innerHTML = "Title and Description needed!";
+            }
+        } else {
+            r = "Not Found";
+            for (const o of allId) {
+                if (o.title === inputTitle.value) {
+                    o.title = inputTitle.value;
+                    o.description = inputDescription.value;
+                    o.priority = inputPriority.value;
+                    r = "Found";
+                    save(allId);
+                    document.getElementById("editordeleteError").innerHTML = ""
+                    document.getElementById("addError").innerHTML = "";
+                    document.getElementById("addSuccess").innerHTML = "Successfully Edited!"
+                    display();
+                    document.getElementById("submit_button").innerHTML = "Submit";
+                    z = true;
+                    inputTitle.disabled = false;
+                    const dl = document.getElementById("delete");
+                    dl.disabled = false;
+                    inputTitle.value = "";
+                    inputDescription.value = "";
+                    inputPriority.value = "Low";
+                }
+            }
+            if (r === "Not Found") {
+                document.getElementById("addError").innerHTML = "";
+                document.getElementById("addSuccess").innerHTML = "";
+                document.getElementById("editordeleteError").innerHTML = "The title is missing!";
+            }
+        }
+    }
+
+        function editTask() {
+            const ed = document.getElementById("inputEditorDelete");
+            let r = false;
+            for (const q of allId) {
+                if (q.title === ed.value) {
+                    /*const editField = document.getElementById("editField");
+                    const editTitle = document.createElement("input");
+                    const editDescription = document.createElement("input");
+                    const editPriority = document.createElement("input");
+                    const editSubmit = document.createElement("button");
+                    editField.style.margin = "20px";
+                    editField.style.padding = "20px";
+                    editTitle.setAttribute("placeholder", "Edit the task title");
+                    editDescription.setAttribute("placeholder", "Edit the task description");
+                    editPriority.setAttribute("placeholder", "Edit the task priority");
+                    editSubmit.setAttribute("id", "editSubmit");
+                    editSubmit.innerHTML = "Confirm";
+                    editSubmit.style.backgroundColor = "rgb(164, 192, 182)";
+                    editField.appendChild(editTitle);
+                    editField.appendChild(editDescription);
+                    editField.appendChild(editPriority);
+                    editField.appendChild(editSubmit);*/
+
+
+                    const inputTitle = document.getElementById("inputTitle");
+                    const inputDescription = document.getElementById("inputDescription");
+                    const inputPriority = document.getElementById("priority");
+                    const editButton = document.getElementById("submit_button");
+                    inputTitle.value = q.title;
+                    inputTitle.disabled = true;
+                    const dl = document.getElementById("delete");
+                    dl.disabled = true;
+                    inputDescription.value = q.description;
+                    inputPriority.value = q.priority;
+                    editButton.innerHTML = "Confirm";
+                    z = false;
+                    r = true;
+                    const dr = document.getElementById("inputEditorDelete");
+                    dr.value = "";
+                    document.getElementById("addSuccess").innerHTML = "The task is selected to edit!";
+                    document.getElementById("addError").innerHTML = "";
+                    document.getElementById("editordeleteError").innerHTML = "";
+                }
+            }
+            if (!r) {
+                document.getElementById("addError").innerHTML = "";
+                document.getElementById("addSuccess").innerHTML = "";
+                document.getElementById("editordeleteError").innerHTML = "Title not found to edit!";
+            }
+        }
+
+        function deleteTask() {
+            let b = false;
+            let arr = [];
+            let obj2 = {};
+            const del = document.getElementById("inputEditorDelete");
+            for (const p of allId) {
+                if (p.title !== del.value) {
+                    obj2 = {
+                    title : p.title,
+                    description : p.description,
+                    priority : p.priority
+                };
+                arr.push(obj2);
+                } else {
+                    b = true;
+            }
+            if (b) {
+                save(arr);
+                document.getElementById("addError").innerHTML = "";
+                document.getElementById("addSuccess").innerHTML = "Successfully Deleted!";
+                document.getElementById("editordeleteError").innerHTML = "";
+                document.getElementById("submit_button").innerHTML = "Submit";
+                z = true;
+                const dz = document.getElementById("inputEditorDelete");
+                dz.value = "";
+                allId = load();
+                display();
+            } else {
+                document.getElementById("addError").innerHTML = "";
+                document.getElementById("addSuccess").innerHTML = "";
+                document.getElementById("editordeleteError").innerHTML = "Title not found to delete!";
+            }
+        }
+    }
+
+        function display() {
+            let text = "";
+            if (allId !== undefined) {
+                for (const task of allId) {
+                    text += "Title: " + task.title + "<br>Description: " + task.description + "<br>Priority: <b>" + task.priority + "</b><br><br>";
+                }
+            }
+            const show = document.getElementById("showId");
+            show.innerHTML = text;
+        }
+        
+        let allId;
+        let z;
+        allId = load();
+        z = true;
+        /*document.addEventListener("onload", function() {
+            allId = load();
+            z = true;
+        });*/
+        const h = document.getElementById("submit_button");
+        h.addEventListener("click", addTask);
+        const v = document.getElementById("edit");
+        v.addEventListener("click", editTask);
+        const k = document.getElementById("delete");
+        k.addEventListener("click", deleteTask);
+        setInterval(function() {
+            const d = new Date();
+            document.getElementById("date").innerHTML = d.toLocaleTimeString();
+        }, 1000);
+        display();
+        /*class Task {
+            constructor(id, title, description, priority="low"){
+                this.id = id;
+                this.title = title;
+                this.description = description;
+                this.priority = priority;
+            }
+            view() {
+                return `The Task's title is "${this.title}" and the desciption is "${this.description}" and it is set to priority as "${this.priority}".`;
+            }
+            edit(title, description, priority) {
+                this.title = title;
+                this.description = description;
+                this.priority = priority;
+            }
+        }*/
+    </script>
+</body>
+</html>
