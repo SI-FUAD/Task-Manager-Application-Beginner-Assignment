@@ -105,21 +105,16 @@
     </div>
     <div id="editField"></div>
     <p id="editordeleteError" style="color: red;"></p>
+    <div id="showCards">No Tasks Added Yet!</div>
     <p id="showId"></p>
     </main>
     <footer>Task Managing Application. All rights reserved.</footer>
     <script>
         function load() {
             const dt = localStorage.getItem("Task Manager Application");
-            if (dt.length === 0) {
-                return {title : "", description : "", priority : ""};
-            } else {
-                const data = JSON.parse(dt);
-                console.log(data);
-                return data;
-            }
+             const data = JSON.parse(dt);
+             return data;
         }
-        save([{title : "New task", description : "Testing", priority : "Low"}, {title : "New task 2", description : "Testing 2", priority : "Medium"}, {title : "New task 3", description : "Testing 3", priority : "High"}]);
 
         function save(s) {
             const st = JSON.stringify(s);
@@ -134,7 +129,8 @@
             let r;
             if (z) {
             if (inputTitle.value !== "" && inputDescription.value !== "") {
-                for (const t of allId) {
+                if (allId.length !== 0) {
+                    for (const t of allId) {
                     if (t.title === inputTitle.value) {
                         r = "Reject";
                         break;
@@ -142,6 +138,9 @@
                         r = "Accept";
                     }
                 }
+            } else {
+                r = "Accept";
+            }
             } else {
                 r = "";
             }
@@ -202,25 +201,6 @@
             let r = false;
             for (const q of allId) {
                 if (q.title === ed.value) {
-                    /*const editField = document.getElementById("editField");
-                    const editTitle = document.createElement("input");
-                    const editDescription = document.createElement("input");
-                    const editPriority = document.createElement("input");
-                    const editSubmit = document.createElement("button");
-                    editField.style.margin = "20px";
-                    editField.style.padding = "20px";
-                    editTitle.setAttribute("placeholder", "Edit the task title");
-                    editDescription.setAttribute("placeholder", "Edit the task description");
-                    editPriority.setAttribute("placeholder", "Edit the task priority");
-                    editSubmit.setAttribute("id", "editSubmit");
-                    editSubmit.innerHTML = "Confirm";
-                    editSubmit.style.backgroundColor = "rgb(164, 192, 182)";
-                    editField.appendChild(editTitle);
-                    editField.appendChild(editDescription);
-                    editField.appendChild(editPriority);
-                    editField.appendChild(editSubmit);*/
-
-
                     const inputTitle = document.getElementById("inputTitle");
                     const inputDescription = document.getElementById("inputDescription");
                     const inputPriority = document.getElementById("priority");
@@ -264,6 +244,7 @@
                 } else {
                     b = true;
             }
+        }
             if (b) {
                 save(arr);
                 document.getElementById("addError").innerHTML = "";
@@ -281,7 +262,6 @@
                 document.getElementById("editordeleteError").innerHTML = "Title not found to delete!";
             }
         }
-    }
 
         function display() {
             let text = "";
@@ -298,10 +278,6 @@
         let z;
         allId = load();
         z = true;
-        /*document.addEventListener("onload", function() {
-            allId = load();
-            z = true;
-        });*/
         const h = document.getElementById("submit_button");
         h.addEventListener("click", addTask);
         const v = document.getElementById("edit");
@@ -313,22 +289,6 @@
             document.getElementById("date").innerHTML = d.toLocaleTimeString();
         }, 1000);
         display();
-        /*class Task {
-            constructor(id, title, description, priority="low"){
-                this.id = id;
-                this.title = title;
-                this.description = description;
-                this.priority = priority;
-            }
-            view() {
-                return `The Task's title is "${this.title}" and the desciption is "${this.description}" and it is set to priority as "${this.priority}".`;
-            }
-            edit(title, description, priority) {
-                this.title = title;
-                this.description = description;
-                this.priority = priority;
-            }
-        }*/
     </script>
 </body>
 </html>
