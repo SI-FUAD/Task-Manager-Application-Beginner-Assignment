@@ -16,6 +16,7 @@
             color: antiquewhite;
             display: flex;
             justify-content: center;
+            box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
         }
 
         #add {
@@ -70,6 +71,17 @@
             justify-content: center;
         }
 
+        #showCards {
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            background-color: rgb(168, 168, 218);
+            border-radius: 50px;
+            margin: 20px;
+            padding: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+        }
+
         footer {
             padding: 20px;
             background-color: rgb(55, 47, 63);
@@ -87,8 +99,8 @@
     <main>
         <p id="date" style="margin-left: 20px;">Wait 1 sec...</p>
         <div id="add">
-        <input type="text" placeholder="Add a new task title" id="inputTitle" required><br><br>
-        <input type="text" placeholder="Add a new task desciption" id="inputDescription" required><br><br>
+        <input type="text" placeholder="Add a new task title" id="inputTitle" maxlength="40"><br><br>
+        <input type="text" placeholder="Add a new task desciption" id="inputDescription" maxlength="120" required><br><br>
         <select name="priority" id="priority">
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
@@ -99,20 +111,22 @@
     <p id="addSuccess"></p>
     <p id="addError"></p>
     <div>
-        <input type="text" placeholder="Add a task title to edit or delete" id="inputEditorDelete" required><br><br>
+        <input type="text" placeholder="Add a task title to edit or delete" id="inputEditorDelete" maxlength="40" required><br><br>
         <button id="edit">Edit</button>
         <button id="delete">Delete</button>
     </div>
     <div id="editField"></div>
     <p id="editordeleteError" style="color: red;"></p>
     <div id="showCards">No Tasks Added Yet!</div>
-    <p id="showId"></p>
     </main>
     <footer>Task Managing Application. All rights reserved.</footer>
     <script>
         function load() {
             const dt = localStorage.getItem("Task Manager Application");
-             const data = JSON.parse(dt);
+             let data = JSON.parse(dt);
+             if (data === null) {
+                data = [];
+             }
              return data;
         }
 
@@ -155,6 +169,9 @@
                 document.getElementById("addError").innerHTML = "";
                 document.getElementById("editordeleteError").innerHTML = "";
                 document.getElementById("addSuccess").innerHTML = "Successfully Added!";
+                inputTitle.value = "";
+                inputDescription.value = "";
+                inputPriority.value = "Low";
                 display();
             } else if (r === "Reject") {
                 document.getElementById("addSuccess").innerHTML = "";
@@ -177,15 +194,15 @@
                     document.getElementById("editordeleteError").innerHTML = ""
                     document.getElementById("addError").innerHTML = "";
                     document.getElementById("addSuccess").innerHTML = "Successfully Edited!"
-                    display();
+                    inputTitle.value = "";
+                    inputDescription.value = "";
+                    inputPriority.value = "Low";
                     document.getElementById("submit_button").innerHTML = "Submit";
                     z = true;
                     inputTitle.disabled = false;
                     const dl = document.getElementById("delete");
                     dl.disabled = false;
-                    inputTitle.value = "";
-                    inputDescription.value = "";
-                    inputPriority.value = "Low";
+                    display();
                 }
             }
             if (r === "Not Found") {
@@ -264,14 +281,31 @@
         }
 
         function display() {
-            let text = "";
-            if (allId !== undefined) {
+            const w = document.getElementById("showCards");
+            if (allId.length !== 0) {
+                w.innerHTML = "";
                 for (const task of allId) {
-                    text += "Title: " + task.title + "<br>Description: " + task.description + "<br>Priority: <b>" + task.priority + "</b><br><br>";
+                    const temp = document.createElement("div");
+                    w.appendChild(temp);
+                    temp.style.overflowWrap = "break-word";
+                    temp.style.margin = "20px";
+                    temp.style.padding = "50px";
+                    temp.style.width = "200px";
+                    temp.style.height = "200px";
+                    temp.style.borderRadius = "50px";
+                    temp.style.boxShadow = "rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px";
+                    if (task.priority === "High") {
+                        temp.style.backgroundColor = "rgb(242, 94, 65)";
+                    } else if (task.priority === "Medium") {
+                        temp.style.backgroundColor = "rgb(240, 172, 55)";
+                    } else {
+                        temp.style.backgroundColor = "rgb(240, 236, 58)";
+                    }
+                    temp.innerHTML = "Title: " + task.title + "<br>Description: " + task.description + "<br>Priority: <b>" + task.priority + "</b>";
                 }
+            } else {
+                w.innerHTML = "No Tasks Added Yet!";
             }
-            const show = document.getElementById("showId");
-            show.innerHTML = text;
         }
         
         let allId;
